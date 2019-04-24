@@ -99,9 +99,11 @@ def create_instance(x0, y0, max_d, size):
     grid = define_starting_point(x0, y0, grid)
     print('Computing...')
     compute_node_distance(grid, x0, y0, 0, max_d)
-    print('Printing...')
-    print_grid(grid)
     return grid
+
+
+def distance_matrix_to_list(grid):
+    list
 
 
 if __name__ == '__main__':
@@ -113,18 +115,22 @@ if __name__ == '__main__':
     x0 = int(size/2)
     y0 = int(size/2)
     grid_1 = create_instance(x0, y0, max_d, size)
+    print_grid(grid_1)
 
     # 2
     x0 = int(size/2) + 1
     y0 = int(size/2)
     grid_2 = create_instance(x0, y0, max_d, size)
+    print_grid(grid_2)
 
     # 3
     x0 = int(size/2)
     y0 = int(size/2) + 1
     grid_3 = create_instance(x0, y0, max_d, size)
+    print_grid(grid_3)
 
     # 4
     x0 = int(size/2) + 1
     y0 = int(size/2) + 1
     grid_4 = create_instance(x0, y0, max_d, size)
+    print_grid(grid_4)
