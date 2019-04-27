@@ -206,7 +206,7 @@ def distance_matrix_to_list(grid, x0, y0, max_d):
     for i in range(0, len(grid)):
         for j in range(0, len(grid[i])):
             if grid[i][j] != '--':
-                coord = [j-y0, i-x0]
+                coord = [j-x0, i-y0]
                 list_distances[int(grid[i][j])].append(coord)
     if is_up(x0) and is_right(y0):
         list_distances[len(list_distances)-1].append('up-right')
@@ -238,8 +238,8 @@ def write_file_distances(filename, distance_list):
 if __name__ == '__main__':
 
     # input data here:
-    size = 120
-    max_d = 50
+    size = 60
+    max_d = 25
 
     # 1st possible coordinate of the origin
     x0 = int(size/2)
