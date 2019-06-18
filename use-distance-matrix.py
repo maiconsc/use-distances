@@ -1,4 +1,4 @@
-def compute_node_distance(grid, xcoord, ycoord, last_d, max_d):
+def compute_node_distance(grid, xcoord, ycoord, last_d, max_d, routing_corners):
     '''
     Recursive method for computing node distance.
     :param grid: USE grid.
@@ -9,56 +9,83 @@ def compute_node_distance(grid, xcoord, ycoord, last_d, max_d):
     :return: a modified grid with the distance (x, y) to the origin computed.
     '''
 
+    global corners_origin
+
     if last_d == max_d:
+        print_routing = list()
+        for i in range(0, len(routing_corners)):
+            print_routing.append(routing_corners[i] - corners_origin[i])
+        print(print_routing)
+        print_grid(grid)
         return None
 
     if is_up(xcoord) and is_right(ycoord):
         if grid[ycoord - 1][xcoord] >= last_d:
             grid[ycoord - 1][xcoord] = last_d + 1
+            if ycoord - 1 < routing_corners[2]:
+                routing_corners[2] -= 1
         else:
             return None
-        compute_node_distance(grid, xcoord, ycoord - 1, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord, ycoord - 1, last_d + 1, max_d, routing_corners.copy())
         if grid[ycoord][xcoord + 1] >= last_d:
             grid[ycoord][xcoord + 1] = last_d + 1
+            if xcoord + 1 > routing_corners[1]:
+                routing_corners[2] += 1
+                routing_corners[1] += 1
         else:
             return None
-        compute_node_distance(grid, xcoord + 1, ycoord, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord + 1, ycoord, last_d + 1, max_d, routing_corners.copy())
 
     elif is_up(xcoord) and is_left(ycoord):
         if grid[ycoord - 1][xcoord] >= last_d:
             grid[ycoord - 1][xcoord] = last_d + 1
+            if ycoord - 1 < routing_corners[2]:
+                routing_corners[2] -= 1
         else:
             return None
-        compute_node_distance(grid, xcoord, ycoord - 1, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord, ycoord - 1, last_d + 1, max_d, routing_corners.copy())
         if grid[ycoord][xcoord - 1] >= last_d:
             grid[ycoord][xcoord - 1] = last_d + 1
+            if xcoord - 1 < routing_corners[0]:
+                routing_corners[2] += 1
+                routing_corners[0] -= 1
         else:
             return None
-        compute_node_distance(grid, xcoord - 1, ycoord, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord - 1, ycoord, last_d + 1, max_d, routing_corners.copy())
 
     elif is_down(xcoord) and is_right(ycoord):
         if grid[ycoord + 1][xcoord] >= last_d:
             grid[ycoord + 1][xcoord] = last_d + 1
+            if ycoord + 1 > routing_corners[3]:
+                routing_corners[3] += 1
         else:
             return None
-        compute_node_distance(grid, xcoord, ycoord + 1, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord, ycoord + 1, last_d + 1, max_d, routing_corners.copy())
         if grid[ycoord][xcoord + 1] >= last_d:
             grid[ycoord][xcoord + 1] = last_d + 1
+            if xcoord + 1 > routing_corners[1]:
+                routing_corners[3] -= 1
+                routing_corners[1] += 1
         else:
             return None
-        compute_node_distance(grid, xcoord + 1, ycoord, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord + 1, ycoord, last_d + 1, max_d, routing_corners.copy())
 
     elif is_down(xcoord) and is_left(ycoord):
         if grid[ycoord + 1][xcoord] >= last_d:
             grid[ycoord + 1][xcoord] = last_d + 1
+            if ycoord + 1 > routing_corners[3]:
+                routing_corners[3] += 1
         else:
             return None
-        compute_node_distance(grid, xcoord, ycoord + 1, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord, ycoord + 1, last_d + 1, max_d, routing_corners.copy())
         if grid[ycoord][xcoord - 1] >= last_d:
             grid[ycoord][xcoord - 1] = last_d + 1
+            if xcoord - 1 < routing_corners[0]:
+                routing_corners[3] -= 1
+                routing_corners[0] -= 1
         else:
             return None
-        compute_node_distance(grid, xcoord - 1, ycoord, last_d + 1, max_d)
+        compute_node_distance(grid, xcoord - 1, ycoord, last_d + 1, max_d, routing_corners.copy())
 
 
 def is_up(xcoord):
@@ -140,7 +167,7 @@ def create_empty_grid(size):
     for i in range(0, size):
         line_aux = list()
         for j in range(0, size):
-            line_aux.append(999)
+            line_aux.append(99)
         grid.append(line_aux)
     return grid
 
@@ -167,7 +194,7 @@ def normalize_grid(grid):
 
     for i in range(0, len(grid)):
         for j in range(0, len(grid[i])):
-            if grid[i][j] == 999:
+            if grid[i][j] == 99:
                 grid[i][j] = '--'
     return grid
 
@@ -182,9 +209,12 @@ def create_instance(x0, y0, max_d, size):
     :return: an USE grid with distances computed.
     '''
 
+    global corners_origin
+    corners_origin = [x0, x0, y0, y0]
+    routing_corners = corners_origin.copy()
     grid = create_empty_grid(size)
     grid = define_starting_point(x0, y0, grid)
-    compute_node_distance(grid, x0, y0, 0, max_d)
+    compute_node_distance(grid, x0, y0, 0, max_d, routing_corners)
     return normalize_grid(grid)
 
 
@@ -238,8 +268,8 @@ def write_file_distances(filename, distance_list):
 if __name__ == '__main__':
 
     # input data here:
-    size = 60
-    max_d = 25
+    size = 10
+    max_d = 3
 
     # 1st possible coordinate of the origin
     x0 = int(size/2)
